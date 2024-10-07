@@ -35,5 +35,5 @@ func TestBash(t *testing.T) {
 	if err = bashtmpl.Execute(out, b); err != nil {
 		t.Fatal(err)
 	}
-	println("OUT", out.String())
+	t.Logf("%s", out.String())
 }

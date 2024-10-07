@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"io"
 	"os"
 
 	"go.science.ru.nl/log"
@@ -17,9 +18,17 @@ var (
 )
 
 func main() {
-	buf, err := os.ReadFile("testdata/AddVolume.yml")
-	if err != nil {
-		log.Fatal(err)
+	var (
+		buf []byte
+		err error
+	)
+
+	if len(os.Args) == 1 {
+		buf, err = io.ReadAll(os.Stdin)
+	} else {
+		if buf, err = os.ReadFile(os.Args[1]); err != nil {
+			log.Fatalf("Can't read file %q: %s", os.Args[1], err)
+		}
 	}
 	p := Patterns{}
 	if err := yaml.Unmarshal(buf, &p); err != nil {

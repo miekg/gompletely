@@ -6,9 +6,6 @@ import (
 	"strings"
 )
 
-// function name
-// .. Command
-
 type Bash struct {
 	Debug    bool
 	Command  string
@@ -32,7 +29,6 @@ func ToBash(p Patterns) Bash {
 	patterns := []Case{}
 	for _, k := range keys {
 		casestring := strings.TrimPrefix(k, b.Command)
-		// if this has a leading space it's a subcommand completion, where the * comes last
 		switch {
 		case strings.HasPrefix(casestring, " "):
 			casestring = quote(strings.TrimSpace(casestring)) + "*"
