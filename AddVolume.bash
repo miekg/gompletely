@@ -22,19 +22,10 @@ _AddVolume_completions_filter() {
   fi
 }
 
-# In the default below we add a check where in the completion are you=, which ARGUMENT (not an option) and output the completion
-# for that thing.
-
-
 _AddVolume_completions() {
-  echo ${COMP_WORDS[@]}
   local cur=${COMP_WORDS[COMP_CWORD]}
   local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
   local compline="${compwords[*]}"
-
-  echo "CL" $compline "CL" >&2
-  echo "CW" $compwords "CW" >&2
-  echo "CUR" $cur "CUR" >&2
 
   case "$compline" in
     *'--readonly-group')
@@ -57,17 +48,12 @@ _AddVolume_completions() {
       while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_AddVolume_completions_filter "$(c user list --comp)")" -- "$cur")
       ;;
 
+    'list'*)
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_AddVolume_completions_filter "blaa hoi")" -- "$cur")
+      ;;
+
     *)
-                 # determine positional argument count
-                COMP_CARG=$COMP_CWORD
-                for i in "${COMP_WORDS[@]}"; do
-                        [[ ${i} == -* ]] && ((COMP_CARG = COMP_CARG - 1))
-                done
-                echo "COMP_CARG" $COMP_CARG
-
-
-
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A file -W "$(_AddVolume_completions_filter "--setup --home --protogroup --force-home --fs-type --readonly-group --volume-type --mail-contact $(c volume-server list --comp) $(c group list --comp)")" -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A file -A directory -W "$(_AddVolume_completions_filter "--setup --home --protogroup --force-home --fs-type --readonly-group --volume-type --mail-contact $(c volume-server list --comp) $(c group list --comp) hoi")" -- "$cur")
       ;;
 
   esac

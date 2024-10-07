@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"text/template"
 
 	"gopkg.in/yaml.v3"
 )
@@ -49,6 +50,7 @@ func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
 	switch {
 	case strings.HasPrefix(str, "<"):
 		c.CompType = Action
+		c.CompGen = strings.Trim(str, "<>")
 	case strings.HasPrefix(str, "-"):
 		c.CompType = Option
 	case strings.HasPrefix(str, "$("):
@@ -57,4 +59,37 @@ func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
 		c.CompType = String
 	}
 	return nil
+}
+
+// Cmd returns the "command" name from p. This is by definition the first and shortest key in p.
+func Cmd(p Patterns) string {
+	cmd := ""
+	for k := range p {
+		if cmd == "" {
+			cmd = k
+		}
+		if len(k) < len(cmd) {
+			cmd = k
+		}
+	}
+	return cmd
+}
+
+func Tmpl(shell string) *template.Template {
+	var err error
+	tmpl := template.New(shell + ".go.tmpl") // .Funcs(ctx.FuncMap)
+	tmpl, err = tmpl.ParseFS(tmplfs, shell+".go.tmpl")
+	if err != nil {
+		panic("cant find template: " + err.Error())
+	}
+	return tmpl
+}
+
+func quote(s string) string { return "'" + s + "'" }
+
+func join(s []string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	return " " + strings.Join(s, " ")
 }

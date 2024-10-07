@@ -30,3 +30,7 @@ AddVolume*--volume-type:
 - "srvvol"
 - "home"
 - "localhome"
+
+AddVolume list:
+- "hoi"
+- "blaa"
