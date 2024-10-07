@@ -8,6 +8,7 @@ AddVolume:
 - --volume-type
 - --mail-contact
 - $(c volume-server list --comp)
+- <noop>
 - $(c group list --comp)
 - <file>
 
@@ -34,3 +35,6 @@ AddVolume*--volume-type:
 AddVolume list:
 - "hoi"
 - "blaa"
+
+AddVolume blaat:
+- <file>

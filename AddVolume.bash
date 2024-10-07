@@ -51,8 +51,12 @@ _AddVolume_completions() {
 	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_AddVolume_completions_filter "hoi blaa")" -- "$cur")
       ;;
 
+  'blaat'*)
+	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen  -A file -W "$(_AddVolume_completions_filter "")" -- "$cur")
+      ;;
+
   *)
-	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen  -A file-W "$(_AddVolume_completions_filter "--setup --home --protogroup --force-home --fs-type --readonly-group --volume-type --mail-contact $(c volume-server list --comp) $(c group list --comp)")" -- "$cur")
+	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen  -A noop -A file -W "$(_AddVolume_completions_filter "--setup --home --protogroup --force-home --fs-type --readonly-group --volume-type --mail-contact  $(c volume-server list --comp) $(c group list --comp)")" -- "$cur")
       ;;
 
   esac

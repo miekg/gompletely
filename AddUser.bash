@@ -50,14 +50,14 @@ _userdb_adduser_completion() {
 		return
 	else
 		# determine positional argument count
-		posargcount=$COMP_CWORD
+		COMP_CARG=$COMP_CWORD
 		for i in "${COMP_WORDS[@]}"; do
 			if [[ ${i} == -* ]]; then
-				((posargcount = posargcount - 1))
+				((COMP_CARG = COMP_CARG - 1))
 			fi
 		done
 
-		case "$posargcount" in
+		case "$COMP_CARG" in
 		2)
 			# protogroup
 			_dbcomplete_protogroup

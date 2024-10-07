@@ -31,6 +31,8 @@ const (
 	String
 )
 
+const ActionNone = "none" // This is a fake action used to count positional arguments.
+
 // Pattern is a completion we read from the yaml. It is altered and made suitable for completion
 // generation by Bash/Zsh/... etc.
 type Pattern struct {
@@ -91,5 +93,5 @@ func join(s []string) string {
 	if len(s) == 0 {
 		return ""
 	}
-	return " " + strings.Join(s, " ")
+	return " " + strings.Join(s, " ") + " "
 }
