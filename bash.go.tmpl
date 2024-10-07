@@ -25,13 +25,6 @@ _{{.Command}}_completions() {
   local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
   local compline="${compwords[*]}"
 
-{{if .Debug -}}
-  if [[ -n "$COMPLETELY_DEBUG" ]]; then
-    echo "compline: '$compline'" > 'completely-debug.txt'
-    echo "cur:      '$cur'" >> 'completely-debug.txt'
-  fi
-{{end -}}
-
   case "$compline" in
 {{range .Patterns }}
   {{ .CaseString }})

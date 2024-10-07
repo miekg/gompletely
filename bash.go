@@ -7,7 +7,6 @@ import (
 )
 
 type Bash struct {
-	Debug    bool
 	Command  string
 	Patterns []Case
 }

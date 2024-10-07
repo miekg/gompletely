@@ -25,7 +25,7 @@ _AddVolume_completions() {
   local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
   local compline="${compwords[*]}"
 
-case "$compline" in
+  case "$compline" in
 
   *'--volume-type')
 	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(_AddVolume_completions_filter "vol srvvol home localhome")" -- "$cur")
