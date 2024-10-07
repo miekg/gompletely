@@ -33,7 +33,7 @@ func ToBash(p Patterns) Bash {
 		if ret != 0 {
 			return ret
 		}
-		return strings.Compare(a, b)
+		return strings.Compare(b, a)
 	})
 
 	pos := []Case{}
