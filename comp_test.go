@@ -30,7 +30,7 @@ func TestBash(t *testing.T) {
 		t.Error(err)
 	}
 
-	b := ToBash(p)
+	b := p.Bash()
 	out := &bytes.Buffer{}
 	if err = bashtmpl.Execute(out, b); err != nil {
 		t.Fatal(err)
