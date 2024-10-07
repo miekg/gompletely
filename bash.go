@@ -41,7 +41,7 @@ func (p Patterns) Bash() Bash {
 	// argument completion. WeG Rab the toplevel, Action, Command and Strings. If _more_ than one inject this
 	i := 1
 	for _, pat := range p[b.Command] {
-		if pat.CompType == Option {
+		if pat.CompType == Option || pat.CompType == String { // only do command and actions
 			continue
 		}
 		c := Case{CaseString: quote(strconv.FormatInt(int64(i), 10))}
@@ -50,8 +50,6 @@ func (p Patterns) Bash() Bash {
 			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
 		case Action:
 			c.CompGen = "-A " + pat.CompGen
-		case String:
-			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
 		}
 
 		pos = append(pos, c)
