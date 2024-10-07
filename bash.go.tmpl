@@ -27,12 +27,12 @@ _{{.Command}}_completions() {
   local compline="${compwords[*]}"
 
   case "$compline" in
-{{range .Patterns}}
-  {{.CaseString}})
-    {{if .Positional}}{{.Positional}}{{end}}
-	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.CompGen}} -- "$cur")
+{{- range .Patterns}}
+    {{.CaseString}}){{if .Positional}}
+      {{.Positional}}{{- end}}
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.CompGen}} -- "$cur")
       ;;
-  {{end}}
+{{end}}
   esac
 } &&
-complete -F _{{.Command}}_completions {{.Command -}}
+  complete -F _{{.Command}}_completions {{.Command -}}
