@@ -84,7 +84,12 @@ func Tmpl(shell string) *template.Template {
 	return tmpl
 }
 
-func quote(s string) string { return "'" + s + "'" }
+func quote(s string) string {
+	if s == "" { // no need to quote empty strings...
+		return s
+	}
+	return "'" + strings.TrimSpace(s) + "'"
+}
 
 func join(s []string) string {
 	if len(s) == 0 {

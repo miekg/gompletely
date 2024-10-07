@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"text/template"
@@ -27,7 +27,14 @@ func ToBash(p Patterns) Bash {
 	for k := range p {
 		keys = append(keys, k)
 	}
-	sort.Sort(sort.Reverse(sort.StringSlice(keys)))
+	// sort on key length, sortest ones need to be at the end for the case to work correctly.
+	slices.SortFunc(keys, func(a, b string) int {
+		ret := len(b) - len(a)
+		if ret != 0 {
+			return ret
+		}
+		return strings.Compare(a, b)
+	})
 
 	pos := []Case{}
 	// The empty key pattern is for the toplevel command. For this command we _also_ inject positional
@@ -67,13 +74,23 @@ func ToBash(p Patterns) Bash {
 	patterns := []Case{}
 	for _, k := range keys {
 		casestring := strings.TrimPrefix(k, b.Command)
-		switch {
-		case strings.HasPrefix(casestring, " "):
-			casestring = quote(strings.TrimSpace(casestring)) + "*"
-		case strings.HasPrefix(casestring, "*"):
-			casestring = "*" + quote(casestring[1:])
-		case casestring == "":
+		fields := strings.Split(casestring, "*")
+		switch len(fields) {
+		case 0:
 			casestring = "*"
+		case 1:
+			casestring = quote(fields[0]) + "*"
+		case 2:
+			if fields[0] == "" {
+				casestring = "*" + quote(fields[1])
+			} else {
+				casestring = quote(fields[0]) + "*" + quote(fields[1])
+			}
+		default:
+			for i := range fields {
+				fields[i] = quote(fields[i])
+			}
+			casestring = strings.Join(fields, "*")
 		}
 
 		c := Case{CaseString: casestring}
