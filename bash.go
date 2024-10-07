@@ -33,7 +33,7 @@ func ToBash(p Patterns) Bash {
 		if ret != 0 {
 			return ret
 		}
-		return strings.Compare(b, a)
+		return strings.Compare(a, b)
 	})
 
 	pos := []Case{}
@@ -94,6 +94,7 @@ func ToBash(p Patterns) Bash {
 		}
 
 		c := Case{CaseString: casestring}
+
 		commands := []string{}
 		options := []string{}
 		actions := []string{}
@@ -111,17 +112,21 @@ func ToBash(p Patterns) Bash {
 			}
 		}
 
-		compgen := fmt.Sprintf(`%s-W "$(_%s_completions_filter "%s")"`,
-			join(actions),
-			b.Command, strings.TrimSpace(
-				join(options)+join(commands)+join(strs),
-			),
-		)
-		c.CompGen = compgen
-		if c.CaseString == "*" {
+		completions_filter := strings.TrimSpace(join(options) + join(commands) + join(strs))
+		switch completions_filter {
+		case "":
+			if len(actions) > 0 {
+				c.CompGen = fmt.Sprintf(`%s`, strings.TrimSpace(join(actions)))
+			}
+		default:
+			c.CompGen = fmt.Sprintf(`%s-W "$(_%s_completions_filter "%s")"`, join(actions), b.Command, completions_filter)
+		}
+		if c.CaseString == "*" { // inject massive switch
 			c.Positional = posbuf.String()
 		}
-		patterns = append(patterns, c)
+		if c.CompGen != "" {
+			patterns = append(patterns, c)
+		}
 
 	}
 	b.Patterns = patterns
