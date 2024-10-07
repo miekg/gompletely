@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"embed"
+	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"go.science.ru.nl/log"
 	"gopkg.in/yaml.v3"
@@ -36,8 +40,16 @@ func main() {
 	}
 
 	b := ToBash(p)
-	if err = bashtmpl.Execute(os.Stdout, b); err != nil {
+	out := &bytes.Buffer{}
+	if err = bashtmpl.Execute(out, b); err != nil {
 		log.Fatal(err)
 	}
-	return
+	if len(os.Args) == 1 {
+		fmt.Println(out.String())
+		return
+	}
+	base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+	if err := os.WriteFile(base+".bash", out.Bytes(), 0644); err != nil {
+		log.Fatalf("Can't write file %q: %s", base, err)
+	}
 }
