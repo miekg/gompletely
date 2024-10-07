@@ -1,0 +1,27 @@
+ftp:
+- --help
+- --version
+- download
+- upload
+- list
+
+ftp download:
+- --help
+- --override
+- <file>
+
+ftp upload:
+- --help
+- --confirm
+- <directory>
+
+ftp list:
+- --help
+- --short
+
+ftp connect ssh:
+- --keyfile
+
+ftp connect*--protocol:
+- scp
+- sftp

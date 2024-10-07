@@ -10,8 +10,7 @@ AddVolume:
 - $(c volume-server list --comp)
 - $(c group list --comp)
 - <file>
-- <directory>
-- "hoi"
+- "item1"
 
 AddVolume*--home:
 - $(c user list --comp)
@@ -34,5 +33,5 @@ AddVolume*--volume-type:
 - "localhome"
 
 AddVolume list:
-- "blaa"
-- "hoi"
+- "item1"
+- "item2"

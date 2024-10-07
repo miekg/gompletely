@@ -36,10 +36,14 @@ func main() {
 	}
 	p := Patterns{}
 	if err := yaml.Unmarshal(buf, &p); err != nil {
-		log.Error(err)
+		log.Fatal(err)
 	}
 
-	b := ToBash(p)
+	if err := p.Valid(); err != nil {
+		log.Fatal(err)
+	}
+
+	b := p.Bash()
 	out := &bytes.Buffer{}
 	if err = bashtmpl.Execute(out, b); err != nil {
 		log.Fatal(err)

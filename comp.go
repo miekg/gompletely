@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"text/template"
 
@@ -61,7 +62,7 @@ func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
 }
 
 // Cmd returns the "command" name from p. This is by definition the first and shortest key in p.
-func Cmd(p Patterns) string {
+func (p Patterns) Cmd() string {
 	cmd := ""
 	for k := range p {
 		if cmd == "" {
@@ -72,6 +73,17 @@ func Cmd(p Patterns) string {
 		}
 	}
 	return cmd
+}
+
+// Valid tells if p is valid. All keys must start with p.Cmd().
+func (p Patterns) Valid() error {
+	cmd := p.Cmd()
+	for k := range p {
+		if !strings.HasPrefix(k, cmd) {
+			return fmt.Errorf("Key %q does not share the prefix: %q", k, cmd)
+		}
+	}
+	return nil
 }
 
 func Tmpl(shell string) *template.Template {

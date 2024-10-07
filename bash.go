@@ -17,12 +17,12 @@ type Bash struct {
 type Case struct {
 	CaseString string // The case string to switch on.
 	CompGen    string // The compgen to add.
-	Positional string // positional switch (only used for "*"-case")
+	Positional string // positional argument switch (only used in "*"-case" and if there are positional arguments)
 }
 
-// ToBash returns a structure suitable for rendering in the template.
-func ToBash(p Patterns) Bash {
-	b := Bash{Command: Cmd(p)}
+// Bash returns a structure suitable for rendering in the bash template.
+func (p Patterns) Bash() Bash {
+	b := Bash{Command: p.Cmd()}
 	keys := []string{}
 	for k := range p {
 		keys = append(keys, k)
