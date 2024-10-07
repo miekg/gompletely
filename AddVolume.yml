@@ -1,0 +1,32 @@
+AddVolume:
+- --setup
+- --home
+- --protogroup
+- --force-home
+- --fs-type
+- --readonly-group
+- --volume-type
+- --mail-contact
+- $(c volume-server list --comp)
+- $(c group list --comp)
+- <file>
+
+AddVolume*--home:
+- $(c user list --comp)
+
+AddVolume*--protogroup:
+- $(c protogrp list --comp)
+
+AddVolume*--fs-type:
+- "zfs"
+- "lvm"
+- "dir"
+
+AddVolume*--readonly-group:
+- $(c group list --comp)
+
+AddVolume*--volume-type:
+- "vol"
+- "srvvol"
+- "home"
+- "localhome"

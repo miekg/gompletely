@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -13,10 +12,13 @@ func TestUnmarshalYAML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	d := Definition{}
+	p := Patterns{}
 
-	if err := yaml.Unmarshal(buf, &d); err != nil {
+	if err := yaml.Unmarshal(buf, &p); err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("+%v\n", d)
+}
+
+func TestBash(t *testing.T) {
+
 }

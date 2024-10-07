@@ -6,48 +6,55 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Definition is a whole file of completion for a command.
-type Definition map[string][]Completion
+// Patterns is a whole file of completions for a command.
+type Patterns map[string][]Pattern
 
-// Completion holds a single line of the completion. One of these is non-nil and should be used.
-type Completion struct {
+// A type has four (useful) values:
+// An Action is a bash shell action to e.g. complete files. These are denoted in the yaml as "<action>".
+// There is one special action "<none>" which is used for arguments that don't have any completion.
+//
+// An Option is the option that can be completed for a command, i.e. "-f" or "--force". These are recognized because
+// they all start with a minus,
+//
+// Command is a shell command to be executed, these are recognized because they use the command substituion
+// syntax "$(echo hello)"
+//
+// String is a single string that is the completion string itself.
+type Type int
+
+const (
+	None Type = iota
 	Action
 	Option
 	Command
 	String
+)
+
+// Pattern is a completion we read from the yaml. It is altered and made suitable for completion
+// generation by Bash/Zsh/... etc.
+type Pattern struct {
+	CompType Type
+	CompGen  string
+	Case     string
 }
 
-// An Action is a bash shell action to e.g. complete files. These are denoted in the yaml as "<action>".
-// There is one special action "<none>" which is used for arguments that don't have any completion.
-type Action string
-
-// An Option is the option that can be completed for a command, i.e. "-f" or "--force". These are recognized because
-// they all start with a minus,
-type Option string
-
-// Command is a shell command to be executed, these are recognized because they use the command substituion
-// syntax "$(echo hello)"
-type Command string
-
-// String is a single string that is the completion.
-type String string
-
-func (c *Completion) UnmarshalYAML(node *yaml.Node) error {
-	str := "" // they are all strings
+func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
+	str := ""
 	err := node.Decode(&str)
 	if err != nil {
 		return err
 	}
+
+	c.CompGen = str
 	switch {
 	case strings.HasPrefix(str, "<"):
-		c.Action = Action(str)
+		c.CompType = Action
 	case strings.HasPrefix(str, "-"):
-		c.Option = Option(str)
+		c.CompType = Option
 	case strings.HasPrefix(str, "$("):
-		c.Command = Command(str)
+		c.CompType = Command
 	default:
-		c.String = String(str)
+		c.CompType = String
 	}
-
 	return nil
 }
