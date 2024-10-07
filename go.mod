@@ -1,4 +1,4 @@
-module github.com/miekg/gompletion
+module github.com/miekg/gompletely
 
 go 1.23.2
 
