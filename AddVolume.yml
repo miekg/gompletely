@@ -8,7 +8,7 @@ AddVolume:
 - --volume-type
 - --mail-contact
 - $(c volume-server list --comp)
-- <noop>
+- $(echo)
 - $(c group list --comp)
 - <file>
 

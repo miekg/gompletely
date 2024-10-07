@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type Bash struct {
@@ -15,6 +17,7 @@ type Bash struct {
 type Case struct {
 	CaseString string // The case string to switch on.
 	CompGen    string // The compgen to add.
+	Positional string // positional switch (only used for "*"-case")
 }
 
 // ToBash returns a structure suitable for rendering in the template.
@@ -26,22 +29,15 @@ func ToBash(p Patterns) Bash {
 	}
 	sort.Sort(sort.Reverse(sort.StringSlice(keys)))
 
-	postional := []Case{}
+	pos := []Case{}
 	// The empty key pattern is for the toplevel command. For this command we _also_ inject positional
-	// argument completion.
-	// grab the toplevel, Action, Command and String. If _more_ than one inject this
-	i := 2
+	// argument completion. Grab the toplevel, Action, Command and String. If _more_ than one inject this
+	i := 1
 	for _, pat := range p[b.Command] {
 		if pat.CompType == Option {
 			continue
 		}
-		println(pat.CompGen)
-		println(pat.CompType)
-		if pat.CompType == Action && pat.CompGen == ActionNone {
-			i++
-			continue
-		}
-		c := Case{CaseString: strconv.FormatInt(int64(i), 10)}
+		c := Case{CaseString: quote(strconv.FormatInt(int64(i), 10))}
 		switch pat.CompType {
 		case Command:
 			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
@@ -51,11 +47,22 @@ func ToBash(p Patterns) Bash {
 			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
 		}
 
-		postional = append(postional, c)
+		pos = append(pos, c)
 		i++
 	}
 
-	fmt.Printf("%+v\n", postional)
+	// Only when we have 2 or more positional arguments will we need to fill the extra switch. Fill
+	// out the template, for later use.
+	posbuf := &bytes.Buffer{}
+	if len(pos) > 1 {
+		tmpl, err := template.New("test").Parse(postmpl)
+		if err != nil {
+			panic("Invalid postmpl: " + err.Error())
+		}
+		if err := tmpl.Execute(posbuf, pos); err != nil {
+			panic("Invalid postmpl: " + err.Error())
+		}
+	}
 
 	patterns := []Case{}
 	for _, k := range keys {
@@ -81,9 +88,6 @@ func ToBash(p Patterns) Bash {
 			case Option:
 				options = append(options, pat.CompGen)
 			case Action:
-				if pat.CompGen == ActionNone {
-					continue
-				}
 				actions = append(actions, "-A "+pat.CompGen)
 			case String:
 				strs = append(strs, pat.CompGen)
@@ -97,11 +101,23 @@ func ToBash(p Patterns) Bash {
 			),
 		)
 		c.CompGen = compgen
-
+		if c.CaseString == "*" {
+			c.Positional = posbuf.String()
+		}
 		patterns = append(patterns, c)
+
 	}
 	b.Patterns = patterns
 	return b
 }
 
-const carg = `COMP_CARG=$COMP_CWORD; for i in "${COMP_WORDS[@]}"; do [[ ${i} == -* ]] && ((COMP_CARG = COMP_CARG - 1)); done`
+const postmpl = `
+	COMP_CARG=$COMP_CWORD; for i in "${COMP_WORDS[@]}"; do [[ ${i} == -* ]] && ((COMP_CARG = COMP_CARG - 1)); done
+	case $COMP_CARG in
+	{{range .}}
+	  {{.CaseString}})
+	    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.CompGen}} -- "$cur")
+            return
+          ;;{{end}}
+        esac
+`

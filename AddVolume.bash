@@ -21,6 +21,7 @@ _AddVolume_completions_filter() {
 }
 
 _AddVolume_completions() {
+  COMPREPLY=()
   local cur=${COMP_WORDS[COMP_CWORD]}
   local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
   local compline="${compwords[*]}"
@@ -56,6 +57,16 @@ _AddVolume_completions() {
       ;;
 
   *)
+      COMP_CARG=$COMP_CWORD; for i in "${COMP_WORDS[@]}"; do [[ ${i} == -* ]] && ((COMP_CARG = COMP_CARG - 1)); don
+      case $COMP_CARG in
+          2)
+              return
+              ;;
+        3)
+            return
+         ;;
+       esac n
+
 	while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen  -A noop -A file -W "$(_AddVolume_completions_filter "--setup --home --protogroup --force-home --fs-type --readonly-group --volume-type --mail-contact  $(c volume-server list --comp) $(c group list --comp)")" -- "$cur")
       ;;
 
