@@ -37,8 +37,8 @@ func (p Patterns) Bash() Bash {
 	})
 
 	pos := []Case{}
-	// The empty key pattern is for the toplevel command. For this command we _also_ inject positional
-	// argument completion. Grab the toplevel, Action, Command and String. If _more_ than one inject this
+	// The b.Command key pattern is for the toplevel command. For this command we _also_ inject positional
+	// argument completion. WeG Rab the toplevel, Action, Command and Strings. If _more_ than one inject this
 	i := 1
 	for _, pat := range p[b.Command] {
 		if pat.CompType == Option {
@@ -59,7 +59,7 @@ func (p Patterns) Bash() Bash {
 	}
 
 	// Only when we have 2 or more positional arguments will we need to fill the extra switch. Fill
-	// out the template, for later use.
+	// out the template, for later use, when builing out the cases below.
 	posbuf := &bytes.Buffer{}
 	if len(pos) > 1 {
 		tmpl, err := template.New("test").Parse(postmpl)
@@ -72,28 +72,27 @@ func (p Patterns) Bash() Bash {
 	}
 
 	patterns := []Case{}
+	c := Case{}
 	for _, k := range keys {
 		casestring := strings.TrimPrefix(k, b.Command)
 		fields := strings.Split(casestring, "*")
 		switch len(fields) {
 		case 0:
-			casestring = "*"
+			c.CaseString = "*"
 		case 1:
-			casestring = quote(fields[0]) + "*"
+			c.CaseString = quote(fields[0]) + "*"
 		case 2:
 			if fields[0] == "" {
-				casestring = "*" + quote(fields[1])
+				c.CaseString = "*" + quote(fields[1])
 			} else {
-				casestring = quote(fields[0]) + "*" + quote(fields[1])
+				c.CaseString = quote(fields[0]) + "*" + quote(fields[1])
 			}
 		default:
 			for i := range fields {
 				fields[i] = quote(fields[i])
 			}
-			casestring = strings.Join(fields, "*")
+			c.CaseString = strings.Join(fields, "*")
 		}
-
-		c := Case{CaseString: casestring}
 
 		commands := []string{}
 		options := []string{}
