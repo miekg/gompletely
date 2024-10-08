@@ -49,9 +49,12 @@ func (p Patterns) Bash() Bash {
 		case Command:
 			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
 		case Action:
+			if pat.CompGen == ActionNoop {
+				i++
+				continue
+			}
 			c.CompGen = "-A " + pat.CompGen
 		}
-
 		pos = append(pos, c)
 		i++
 	}
@@ -103,7 +106,9 @@ func (p Patterns) Bash() Bash {
 			case Option:
 				options = append(options, pat.CompGen)
 			case Action:
-				actions = append(actions, "-A "+pat.CompGen)
+				if pat.CompGen != ActionNoop {
+					actions = append(actions, "-A "+pat.CompGen)
+				}
 			case String:
 				strs = append(strs, pat.CompGen)
 			}

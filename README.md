@@ -10,10 +10,10 @@ Positional parameters are only completed if they contain a command `$(...)` or a
 ~~~ yaml
 useradd:
 - --root
-- $(echo)
+- <noop>
 - $(c group list --comp)
-- $(echo)
-- $(echo)
+- <noop>
+- <noop>
 - $(c user lists --comp --contact)
 - $(for m in 6 12 24 36 48; do ((m = m + 1)); echo $(date -d "$(date +%Y-%m-1) $m month" +%Y-%m-%d); done)
 - $(echo E U S Z)
@@ -21,5 +21,5 @@ useradd:
 ~~~
 
 this `useradd` command, has 1 option (`--root`) and all other values are positional parameters with
-a command used for the completion. The `$(echo)` are noop completions to make postional counting
+a command used for the completion. The `<noop>` are noop completions to make postional counting
 work.
