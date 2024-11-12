@@ -67,7 +67,6 @@ func main() {
 		filename = base + ".bash"
 	case "zsh":
 		z := p.Zsh()
-		fmt.Printf("%+v\n", z)
 		return
 		if err = zshtmpl.Execute(out, z); err != nil {
 			log.Fatal(err)

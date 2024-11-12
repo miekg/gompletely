@@ -27,7 +27,7 @@ func (p Patterns) Bash() Bash {
 	for k := range p {
 		keys = append(keys, k)
 	}
-	// sort on key length, sortest ones need to be at the end for the case to work correctly.
+	// sort on key length, shortest ones need to be at the end for the case to work correctly.
 	slices.SortFunc(keys, func(a, b string) int {
 		ret := len(b) - len(a)
 		if ret != 0 {
