@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"embed"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -18,7 +19,9 @@ var tmplfs embed.FS
 
 var (
 	bashtmpl = Tmpl("bash")
-	// zshtmpl = Tmpl("zsh")
+	zshtmpl  = Tmpl("zsh")
+
+	flagShell = flag.String("s", "bash", "generate the completions for this shell.")
 )
 
 func main() {
@@ -26,6 +29,11 @@ func main() {
 		buf []byte
 		err error
 	)
+	flag.Parse()
+
+	if *flagShell != "bash" || *flagShell != "zsh" {
+		log.Fatalf("invalid shell %q, expected %q or %q", *flagShell, "bash", "zsh")
+	}
 
 	if len(os.Args) == 1 {
 		buf, err = io.ReadAll(os.Stdin)
@@ -43,17 +51,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	b := p.Bash()
 	out := &bytes.Buffer{}
-	if err = bashtmpl.Execute(out, b); err != nil {
-		log.Fatal(err)
+	filename := ""
+	switch *flagShell {
+	case "bash":
+		b := p.Bash()
+		if err = bashtmpl.Execute(out, b); err != nil {
+			log.Fatal(err)
+		}
+		if len(os.Args) == 1 {
+			fmt.Println(out.String())
+			return
+		}
+		base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		filename = base + ".bash"
+	case "zsh":
+		z := p.Zsh()
+		if err = zshtmpl.Execute(out, z); err != nil {
+			log.Fatal(err)
+		}
+		if len(os.Args) == 1 {
+			fmt.Println(out.String())
+			return
+		}
+		base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		filename = "_" + base
 	}
-	if len(os.Args) == 1 {
-		fmt.Println(out.String())
-		return
-	}
-	base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
-	if err := os.WriteFile(base+".bash", out.Bytes(), 0644); err != nil {
-		log.Fatalf("Can't write file %q: %s", base, err)
+	if err := os.WriteFile(filename, out.Bytes(), 0644); err != nil {
+		log.Fatalf("Can't write file %q: %s", filename, err)
 	}
 }

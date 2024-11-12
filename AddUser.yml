@@ -1,0 +1,19 @@
+AddUser:
+- --root
+- --reuse-uid
+- --no-reuse-uid
+- --home-voume
+- --no-home-voume
+- --mailcontact
+- --no-mailcontact
+- --maildhzpasswordto
+- --man
+- --help
+- <noop>
+- $(c protogrp list --comp)
+- <noop>
+- <noop>
+- $(c user list --comp --contact)
+- $(for m in 6 12 24 36 48; do ((m = m + 1)); echo $(date -d "$(date +%Y-%m-1) $m month" +%Y-%m-%d); done)
+- $(echo E U S Z)
+- $(c shell list --comp)

@@ -22,6 +22,9 @@ type Patterns map[string][]Pattern
 // syntax "$(echo hello)"
 //
 // String is a single string that is the completion string itself.
+//
+// Optionally these values may be followed by a "[help]" string in blockquotes that can be used as a help. In the future
+// this might be following again with ":message" which zsh uses to say what is being completed.
 type Type int
 
 const (

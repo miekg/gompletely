@@ -5,7 +5,7 @@ check the testdata directory).
 
 The output closely matches 'completely', apart from the comments and the positional paramaters bit.
 Positional parameters are only completed if they contain a command `$(...)` or are an action
-`<file>`. Options and lists of strings are not included. For subcommands this probably doesn't work.
+`<file>`.
 
 ~~~ yaml
 useradd:
@@ -23,3 +23,11 @@ useradd:
 this `useradd` command, has 1 option (`--root`) and all other values are positional parameters with
 a command used for the completion. The `<noop>` are noop completions to make postional counting
 work.
+
+For zsh completion
+
+~~~ yaml
+- "--root[help text"
+~~~
+
+is also supported. In the future we might even include ":message" suffix as well.
