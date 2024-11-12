@@ -33,13 +33,14 @@ func (p Patterns) Zsh() Zsh {
 		return strings.Compare(a, b)
 	})
 
-	fmt.Printf("%+v\n", keys)
+	fmt.Printf("KEYS %+v\n", keys)
 
 	args := []Arg{}
 	for _, k := range keys {
 		a := Arg{}
 		actions := []string{}
 		strs := []string{}
+		println("KEEKE", k)
 		for _, pat := range p[k] {
 			switch pat.Type {
 			case Command:
@@ -58,7 +59,6 @@ func (p Patterns) Zsh() Zsh {
 
 		}
 		args = append(args, a)
-
 	}
 	z.Patterns = args
 	return z
