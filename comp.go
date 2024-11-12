@@ -12,6 +12,21 @@ import (
 // Patterns is a whole file of completions for a command.
 type Patterns map[string][]Pattern
 
+// OptionHasArg search the keys in p with <cmd>*option, and returns the completions
+func (p Patterns) OptionHasArg(cmd, option string) []string {
+	patterns, ok := p[cmd+"*"+option]
+	if !ok {
+		return nil
+	}
+	// ok this is an option, return a string valid for _values, concattenate them with spaces
+	// and quota them
+	cs := make([]string, len(patterns))
+	for i := range patterns {
+		cs[i] = patterns[i].Completion
+	}
+	return cs
+}
+
 // A type has four (useful) values:
 // An Action is a bash shell action to e.g. complete files. These are denoted in the yaml as "<action>".
 // There is one special action "<none>" which is used for arguments that don't have any completion.
@@ -38,8 +53,7 @@ const (
 
 const ActionNoop = "noop"
 
-// Pattern is a completion we read from the yaml. It is altered and made suitable for completion
-// generation by Bash/Zsh/... etc.
+// Pattern is a completion we read from the yaml. It is altered and made suitable for completion generation by Bash/Zsh/... etc.
 type Pattern struct {
 	Type       CompletionType
 	Completion string // the literal completion string
