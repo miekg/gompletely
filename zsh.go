@@ -1,25 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 )
 
 type Zsh struct {
-	Command string
-	Args    []Arg
+	Command  string
+	Patterns []Arg
 }
 
 type Arg struct {
-	Option     string // The case string to switch on.
-	Completion string // The completion it requires.
-	Help       string // The help string between [ and ].
-	Positional string // positional argument.
+	Positional []string
+	Options    []string // The completion it requires.
+	// help is include in the above if there was one.
 }
 
 // Zsh returns a structure suitable for rendering in the zsh template.
-func (p Patterns) Zsh() Bash {
-	b := Zsh{Command: p.Cmd()}
+func (p Patterns) Zsh() Zsh {
+	z := Zsh{Command: p.Cmd()}
+	keys := []string{}
 	for k := range p {
 		keys = append(keys, k)
 	}
@@ -32,6 +33,33 @@ func (p Patterns) Zsh() Bash {
 		return strings.Compare(a, b)
 	})
 
-	for _, pat := range p[b.Command] {
+	fmt.Printf("%+v\n", keys)
+
+	args := []Arg{}
+	for _, k := range keys {
+		a := Arg{}
+		actions := []string{}
+		strs := []string{}
+		for _, pat := range p[k] {
+			switch pat.Type {
+			case Command:
+				// not which one
+				a.Positional = append(a.Positional, pat.Completion)
+				// need to come last
+			case Option:
+				a.Options = append(a.Options, pat.Completion)
+			case Action:
+				if pat.Completion != ActionNoop {
+					actions = append(actions, "-A "+pat.Completion)
+				}
+			case String:
+				strs = append(strs, pat.Completion)
+			}
+
+		}
+		args = append(args, a)
+
 	}
+	z.Patterns = args
+	return z
 }

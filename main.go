@@ -31,15 +31,15 @@ func main() {
 	)
 	flag.Parse()
 
-	if *flagShell != "bash" || *flagShell != "zsh" {
+	if *flagShell != "bash" && *flagShell != "zsh" {
 		log.Fatalf("invalid shell %q, expected %q or %q", *flagShell, "bash", "zsh")
 	}
 
-	if len(os.Args) == 1 {
+	if flag.NArg() == 0 {
 		buf, err = io.ReadAll(os.Stdin)
 	} else {
-		if buf, err = os.ReadFile(os.Args[1]); err != nil {
-			log.Fatalf("Can't read file %q: %s", os.Args[1], err)
+		if buf, err = os.ReadFile(flag.Arg(1)); err != nil {
+			log.Fatalf("Can't read file %q: %s", flag.Arg(1), err)
 		}
 	}
 	p := Patterns{}
@@ -59,22 +59,24 @@ func main() {
 		if err = bashtmpl.Execute(out, b); err != nil {
 			log.Fatal(err)
 		}
-		if len(os.Args) == 1 {
+		if flag.NArg() == 1 {
 			fmt.Println(out.String())
 			return
 		}
-		base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))
 		filename = base + ".bash"
 	case "zsh":
 		z := p.Zsh()
+		fmt.Printf("%+v\n", z)
+		return
 		if err = zshtmpl.Execute(out, z); err != nil {
 			log.Fatal(err)
 		}
-		if len(os.Args) == 1 {
+		if flag.NArg() == 1 {
 			fmt.Println(out.String())
 			return
 		}
-		base := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))
 		filename = "_" + base
 	}
 	if err := os.WriteFile(filename, out.Bytes(), 0644); err != nil {

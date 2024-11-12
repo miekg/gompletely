@@ -16,7 +16,7 @@ type Bash struct {
 
 type Case struct {
 	CaseString string // The case string to switch on.
-	CompGen    string // The compgen to add.
+	Completion string // The compgen to add.
 	Positional string // positional argument switch (only used in "*"-case" and if there are positional arguments)
 }
 
@@ -38,22 +38,22 @@ func (p Patterns) Bash() Bash {
 
 	pos := []Case{}
 	// The b.Command key pattern is for the toplevel command. For this command we _also_ inject positional
-	// argument completion. WeG Rab the toplevel, Action, Command and Strings. If _more_ than one inject this
+	// argument completion. We grab the toplevel, Action, Command and Strings. If _more_ than one inject this
 	i := 1
 	for _, pat := range p[b.Command] {
-		if pat.CompType == Option || pat.CompType == String { // only do command and actions
+		if pat.Type == Option || pat.Type == String { // only do command and actions
 			continue
 		}
 		c := Case{CaseString: quote(strconv.FormatInt(int64(i), 10))}
-		switch pat.CompType {
+		switch pat.Type {
 		case Command:
-			c.CompGen = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.CompGen)
+			c.Completion = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.Completion)
 		case Action:
-			if pat.CompGen == ActionNoop {
+			if pat.Completion == ActionNoop {
 				i++
 				continue
 			}
-			c.CompGen = "-A " + pat.CompGen
+			c.Completion = "-A " + pat.Completion
 		}
 		pos = append(pos, c)
 		i++
@@ -100,17 +100,17 @@ func (p Patterns) Bash() Bash {
 		actions := []string{}
 		strs := []string{}
 		for _, pat := range p[k] {
-			switch pat.CompType {
+			switch pat.Type {
 			case Command:
-				commands = append(commands, pat.CompGen)
+				commands = append(commands, pat.Completion)
 			case Option:
-				options = append(options, pat.CompGen)
+				options = append(options, pat.Completion)
 			case Action:
-				if pat.CompGen != ActionNoop {
-					actions = append(actions, "-A "+pat.CompGen)
+				if pat.Completion != ActionNoop {
+					actions = append(actions, "-A "+pat.Completion)
 				}
 			case String:
-				strs = append(strs, pat.CompGen)
+				strs = append(strs, pat.Completion)
 			}
 		}
 
@@ -118,15 +118,15 @@ func (p Patterns) Bash() Bash {
 		switch completions_filter {
 		case "":
 			if len(actions) > 0 {
-				c.CompGen = fmt.Sprintf(`%s`, strings.TrimSpace(join(actions)))
+				c.Completion = fmt.Sprintf(`%s`, strings.TrimSpace(join(actions)))
 			}
 		default:
-			c.CompGen = fmt.Sprintf(`%s-W "$(_%s_completions_filter "%s")"`, join(actions), b.Command, completions_filter)
+			c.Completion = fmt.Sprintf(`%s-W "$(_%s_completions_filter "%s")"`, join(actions), b.Command, completions_filter)
 		}
 		if c.CaseString == "*" { // inject massive switch
 			c.Positional = posbuf.String()
 		}
-		if c.CompGen != "" {
+		if c.Completion != "" {
 			patterns = append(patterns, c)
 		}
 

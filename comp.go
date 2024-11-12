@@ -40,8 +40,9 @@ const ActionNoop = "noop"
 // Pattern is a completion we read from the yaml. It is altered and made suitable for completion
 // generation by Bash/Zsh/... etc.
 type Pattern struct {
-	CompType Type
-	CompGen  string
+	Type       Type
+	Completion string
+	Help       string // optional help text
 }
 
 func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
@@ -51,17 +52,19 @@ func (c *Pattern) UnmarshalYAML(node *yaml.Node) error {
 		return err
 	}
 
-	c.CompGen = str
+	// todo: help
+
+	c.Completion = str
 	switch {
 	case strings.HasPrefix(str, "<"):
-		c.CompType = Action
-		c.CompGen = strings.Trim(str, "<>")
+		c.Type = Action
+		c.Completion = strings.Trim(str, "<>")
 	case strings.HasPrefix(str, "-"):
-		c.CompType = Option
+		c.Type = Option
 	case strings.HasPrefix(str, "$("):
-		c.CompType = Command
+		c.Type = Command
 	default:
-		c.CompType = String
+		c.Type = String
 	}
 	return nil
 }
