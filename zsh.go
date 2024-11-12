@@ -33,7 +33,7 @@ func (p Patterns) Zsh() Zsh {
 	})
 	z.Commands = keys
 
-	fmt.Printf("#compef _%s %s\n\n", z.Command, z.Command)
+	fmt.Printf("#compdef _%s %s\n\n", z.Command, z.Command)
 	for _, command := range z.Commands {
 		patterns, ok := z.Patterns[command] // may be empty because we delete from the map
 		if !ok {
