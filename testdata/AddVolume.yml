@@ -1,16 +1,16 @@
 AddVolume:
 - --setup
-- --home
+- --home[set the home address]
 - --protogroup
 - --force-home
 - --fs-type
 - --readonly-group
 - --volume-type
 - --mail-contact
-- $(c volume-server list --comp)
-- $(c group list --comp)
-- <file>
-- "item1"
+- 1,$(c volume-server list --comp)
+- 2,$(c group list --comp)
+- 3,file,<file>
+- 3,item,item1
 
 AddVolume*--home:
 - $(c user list --comp)
@@ -31,7 +31,3 @@ AddVolume*--volume-type:
 - "srvvol"
 - "home"
 - "localhome"
-
-AddVolume list:
-- "item1"
-- "item2"
