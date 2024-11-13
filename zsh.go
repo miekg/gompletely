@@ -90,8 +90,15 @@ func (p Patterns) Zsh() (Zsh, []byte) {
 				continue
 			}
 			if choices, ok := poschoice[p.Position]; ok {
-				fmt.Fprintf(b, "\t\t'%d: : _values %q ( %s )", p.Position /*description */, "userdb", strings.Join(choices, " "))
-				fmt.Fprintf(b, "' \\\n")
+				// if the completion is empty, this is mean as a hint to the user what to complete
+				if p.Completion == "" {
+					// 2:service name:'
+					fmt.Fprintf(b, "\t\t'%d:%s:", p.Position, p.PosChoice)
+					fmt.Fprintf(b, "' \\\n")
+				} else {
+					fmt.Fprintf(b, "\t\t'%d: : _values %q ( %s )", p.Position /*description */, "userdb", strings.Join(choices, " "))
+					fmt.Fprintf(b, "' \\\n")
+				}
 				delete(poschoice, p.Position) // delete ourselves from the map
 				continue
 			}
@@ -99,7 +106,6 @@ func (p Patterns) Zsh() (Zsh, []byte) {
 			if p.PosChoice != "" {
 				continue
 			}
-
 			if p.Type == Action {
 				p.Completion = actionToZsh(p.Completion)
 				fmt.Fprintf(b, "\t\t'%d: : %s", p.Position, p.Completion)

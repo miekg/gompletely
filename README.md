@@ -38,5 +38,5 @@ Unload and load test completion:
 unfunction _AddVolume; autoload -U _AddVolume
 ./gompletely -s zsh < testdata/AddVolume.yml > _AddVolume
 source _AddVolume
-compdef AddVolume _AddVolume
+compdef _AddVolume AddVolume
 ~~~
