@@ -9,8 +9,6 @@ AddVolume:
 - --mail-contact
 - 1,$(c volume-server list --comp)
 - 2,$(c group list --comp)
-- 3,file,<file>
-- 3,item,item1
 
 AddVolume*--home:
 - $(c user list --comp)

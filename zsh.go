@@ -96,6 +96,11 @@ func (p Patterns) Zsh() Zsh {
 			if p.PosChoice != "" {
 				continue
 			}
+			if p.Type == Command {
+				comp := strings.TrimPrefix(p.Completion, "$(")
+				comp = strings.TrimSuffix(comp, ")")
+				p.Completion = "{ " + comp + " }"
+			}
 
 			fmt.Printf("\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
 			fmt.Printf("' \\\n")
@@ -103,30 +108,7 @@ func (p Patterns) Zsh() Zsh {
 
 		fmt.Printf("\t\t\"*::arg:->args\"\n")
 
-		// reset poschoice to generate the case on $line
-		poschoice = map[int][]string{}
-		for _, p := range patterns {
-			if p.Position == 0 {
-				continue
-			}
-			if p.PosChoice == "" {
-				continue
-			}
-			poschoice[p.Position] = append(poschoice[p.Position], p.PosChoice)
-			poschoice[p.Position] = slices.Compact(poschoice[p.Position])
-		}
-		if len(poschoice) > 0 {
-			fmt.Printf("\n\tcase $line[1] in)\n")
-			for _, ps := range poschoice {
-				for _, p := range ps {
-					fmt.Printf("\t\t%s)\n", p)
-					fmt.Printf("\t\t\t%s)\n", "_"+funcName(command)+"_"+p)
-				}
-				fmt.Printf("\t\t;;\n")
-
-			}
-			fmt.Printf("\tesac\n")
-		}
+		// TODO: subcommands, and correctly generate those functions.
 		fmt.Printf("}\n")
 	}
 	return z
