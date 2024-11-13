@@ -37,8 +37,8 @@ func main() {
 	if flag.NArg() == 0 {
 		buf, err = io.ReadAll(os.Stdin)
 	} else {
-		if buf, err = os.ReadFile(flag.Arg(1)); err != nil {
-			log.Fatalf("Can't read file %q: %s", flag.Arg(1), err)
+		if buf, err = os.ReadFile(flag.Arg(0)); err != nil {
+			log.Fatalf("Can't read file %q: %s", flag.Arg(0), err)
 		}
 	}
 	p := Patterns{}
@@ -63,15 +63,15 @@ func main() {
 			fmt.Println(out.String())
 			return
 		}
-		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))
+		base := strings.TrimSuffix(flag.Arg(0), filepath.Ext(flag.Arg(0)))
 		filename = base + ".bash"
 	case "zsh":
-		_, out := p.Zsh()
+		_, out = p.Zsh()
 		if flag.NArg() == 0 {
-			fmt.Println(string(out))
+			fmt.Print(out.String())
 			return
 		}
-		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))
+		base := strings.TrimSuffix(flag.Arg(0), filepath.Ext(flag.Arg(0)))
 		filename = "_" + base
 	}
 	if err := os.WriteFile(filename, out.Bytes(), 0644); err != nil {

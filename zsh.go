@@ -16,7 +16,7 @@ type Zsh struct {
 }
 
 // Zsh returns a buffer with the completion. There is no template called.
-func (p Patterns) Zsh() (Zsh, []byte) {
+func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 	b := &bytes.Buffer{}
 	z := Zsh{Command: p.Cmd(), Patterns: map[string][]Pattern{}}
 	z.Patterns = p
@@ -125,7 +125,7 @@ func (p Patterns) Zsh() (Zsh, []byte) {
 		// TODO: subcommands, and correctly generate those functions.
 		fmt.Fprintf(b, "}\n")
 	}
-	return z, b.Bytes()
+	return z, b
 }
 
 // funcName returns a string the valid function name in Zsh.
