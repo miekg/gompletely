@@ -30,7 +30,7 @@ _{{.Command}}_completions() {
 {{- range .Patterns}}
     {{.CaseString}}){{if .Positional}}
       {{.Positional}}{{- end}}
-      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.CompGen}} -- "$cur")
+      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.Completion}} -- "$cur")
       ;;
 {{end}}
   esac
