@@ -43,7 +43,7 @@ func main() {
 	}
 	p := Patterns{}
 	if err := yaml.Unmarshal(buf, &p); err != nil {
-		log.Fatal(err)
+		log.Fatalf("can't parse %s: %s", flag.Arg(0), err)
 	}
 
 	if err := p.Valid(); err != nil {
