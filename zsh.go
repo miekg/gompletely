@@ -96,11 +96,6 @@ func (p Patterns) Zsh() Zsh {
 			if p.PosChoice != "" {
 				continue
 			}
-			if p.Type == Command {
-				comp := strings.TrimPrefix(p.Completion, "$(")
-				comp = strings.TrimSuffix(comp, ")")
-				p.Completion = "{ " + comp + " }"
-			}
 
 			fmt.Printf("\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
 			fmt.Printf("' \\\n")

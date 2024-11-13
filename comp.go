@@ -22,13 +22,6 @@ func (p Patterns) OptionHasArg(cmd, option string) []string {
 	// and quota them
 	cs := make([]string, len(patterns))
 	for i := range patterns {
-		if patterns[i].Type == Command {
-			comp := strings.TrimPrefix(patterns[i].Completion, "$(")
-			comp = strings.TrimSuffix(comp, ")")
-			cs[i] = "{ " + comp + " }"
-			continue
-		}
-
 		cs[i] = patterns[i].Completion
 	}
 	return cs
