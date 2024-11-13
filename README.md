@@ -1,5 +1,7 @@
 Re-implementation in Go of https://github.com/DannyBen/completely
 
+> Note: Hacked together, works for me, probably not for you.
+
 Mostly to fix completion of positional arguments. See the README in the above repo for the YAML syntax (or
 check the testdata directory).
 

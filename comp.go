@@ -55,8 +55,6 @@ const (
 	String
 )
 
-const ActionNoop = "noop"
-
 // Pattern is a completion we read from the yaml. It is altered and made suitable for completion generation by Bash/Zsh/... etc.
 type Pattern struct {
 	Type       CompletionType

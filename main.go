@@ -19,7 +19,6 @@ var tmplfs embed.FS
 
 var (
 	bashtmpl = Tmpl("bash")
-	zshtmpl  = Tmpl("zsh")
 
 	flagShell = flag.String("s", "bash", "generate the completions for this shell.")
 )
@@ -59,20 +58,17 @@ func main() {
 		if err = bashtmpl.Execute(out, b); err != nil {
 			log.Fatal(err)
 		}
-		if flag.NArg() == 1 {
+
+		if flag.NArg() == 0 {
 			fmt.Println(out.String())
 			return
 		}
 		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))
 		filename = base + ".bash"
 	case "zsh":
-		z := p.Zsh()
-		return
-		if err = zshtmpl.Execute(out, z); err != nil {
-			log.Fatal(err)
-		}
-		if flag.NArg() == 1 {
-			fmt.Println(out.String())
+		_, out := p.Zsh()
+		if flag.NArg() == 0 {
+			fmt.Println(string(out))
 			return
 		}
 		base := strings.TrimSuffix(flag.Arg(1), filepath.Ext(flag.Arg(1)))

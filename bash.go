@@ -49,10 +49,6 @@ func (p Patterns) Bash() Bash {
 		case Command:
 			c.Completion = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.Completion)
 		case Action:
-			if pat.Completion == ActionNoop {
-				i++
-				continue
-			}
 			c.Completion = "-A " + pat.Completion
 		}
 		pos = append(pos, c)
@@ -106,9 +102,7 @@ func (p Patterns) Bash() Bash {
 			case Option:
 				options = append(options, pat.Completion)
 			case Action:
-				if pat.Completion != ActionNoop {
-					actions = append(actions, "-A "+pat.Completion)
-				}
+				actions = append(actions, "-A "+pat.Completion)
 			case String:
 				strs = append(strs, pat.Completion)
 			}
