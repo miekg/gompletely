@@ -134,7 +134,7 @@ const postmpl = `
 	case $COMP_CARG in
 	{{range .}}
 	  {{.CaseString}})
-	    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.CompGen}} -- "$cur")
+	    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen {{.Completion}} -- "$cur")
             return
           ;;{{end}}
         esac
