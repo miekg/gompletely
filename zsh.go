@@ -43,7 +43,7 @@ func (p Patterns) Zsh() Zsh {
 		if !ok {
 			continue
 		}
-		fmt.Printf("function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", command)
+		fmt.Printf("function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", funcName(command))
 
 		// Options
 		// --fs-type[]: : _values "userdb" zfs lvm dir' \
@@ -77,6 +77,7 @@ func (p Patterns) Zsh() Zsh {
 				continue
 			}
 			poschoice[p.Position] = append(poschoice[p.Position], p.PosChoice)
+			poschoice[p.Position] = slices.Compact(poschoice[p.Position])
 		}
 
 		// Positional arguments,
@@ -101,8 +102,37 @@ func (p Patterns) Zsh() Zsh {
 		}
 
 		fmt.Printf("\t\t\"*::arg:->args\"\n")
+
+		// reset poschoice to generate the case on $line
+		poschoice = map[int][]string{}
+		for _, p := range patterns {
+			if p.Position == 0 {
+				continue
+			}
+			if p.PosChoice == "" {
+				continue
+			}
+			poschoice[p.Position] = append(poschoice[p.Position], p.PosChoice)
+			poschoice[p.Position] = slices.Compact(poschoice[p.Position])
+		}
+		if len(poschoice) > 0 {
+			fmt.Printf("\n\tcase $line[1] in)\n")
+			for _, ps := range poschoice {
+				for _, p := range ps {
+					fmt.Printf("\t\t%s)\n", p)
+					fmt.Printf("\t\t\t%s)\n", "_"+funcName(command)+"_"+p)
+				}
+				fmt.Printf("\t\t;;\n")
+
+			}
+			fmt.Printf("\tesac\n")
+		}
 		fmt.Printf("}\n")
 	}
-
 	return z
+}
+
+// funcName returns a string the valid function name in Zsh.
+func funcName(cmd string) string {
+	return strings.Replace(cmd, " ", "_", -1)
 }

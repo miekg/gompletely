@@ -1,0 +1,18 @@
+c:
+- 1,user,user
+- 1,u,u
+- --debug
+- --json
+- --man
+
+c user:
+- 1,list,list
+
+c user list:
+- 1,user,$(c user list --comp)
+
+c u:
+- 1,list,list
+
+c u list:
+- 1,user,$(c user list --comp)
