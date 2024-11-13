@@ -33,6 +33,10 @@ func (p Patterns) Zsh() Zsh {
 	})
 	z.Commands = keys
 
+	/* werkend
+	'--fs-type[fs type2]: : _values "userdb" zfs lvm dir' \
+	*/
+
 	fmt.Printf("#compdef _%s %s\n\n", z.Command, z.Command)
 	for _, command := range z.Commands {
 		patterns, ok := z.Patterns[command] // may be empty because we delete from the map
@@ -52,12 +56,9 @@ func (p Patterns) Zsh() Zsh {
 			fmt.Printf("\t\t'%s%s", p.Completion, p.Help)
 			args := z.Patterns.OptionHasArg(command, p.Completion)
 			if args != nil {
-				quoted := ""
-				for i := range args {
-					quoted += `"` + args[i] + `"`
-				}
-
-				fmt.Printf(":: _values %q %s" /*description*/, "userdb", quoted)
+				// the : : instead of :: is significant, between working _values, and not.
+				// It holds the description of what is being completed.
+				fmt.Printf(": : _values %q %s" /*description*/, "userdb", strings.Join(args, " "))
 				// remove from pattersn
 				delete(z.Patterns, command+"*"+p.Completion)
 			}

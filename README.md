@@ -26,3 +26,15 @@ a unique (to this completion stanza) must be added.
 
 The `[blaa]` is the optional help text that may be added. In the future we might even include
 ":message" suffix as well.
+
+## Development
+
+### Zsh
+
+Unload and load test completion:
+~~~ sh
+unfunction _AddVolume; autoload -U _AddVolume
+./gompletely -s zsh < testdata/AddVolume.yml > _AddVolume
+source _AddVolume
+compdef AddVolume _AddVolume
+~~~
