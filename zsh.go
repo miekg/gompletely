@@ -67,14 +67,35 @@ func (p Patterns) Zsh() Zsh {
 		}
 
 		// gather positional arguments with the same number, as they most be processs
-		// on the same line in the _arguments ... TODO
+		// on the same line in the _arguments ... Put those in a map[num][]string
+		poschoice := map[int][]string{}
+		for _, p := range patterns {
+			if p.Position == 0 {
+				continue
+			}
+			if p.PosChoice == "" {
+				continue
+			}
+			poschoice[p.Position] = append(poschoice[p.Position], p.PosChoice)
+		}
 
-		// Positional arguments
+		// Positional arguments,
 		//  "1: :(quietly loudly)" \
 		for _, p := range patterns {
 			if p.Position == 0 {
 				continue
 			}
+			if choices, ok := poschoice[p.Position]; ok {
+				fmt.Printf("\t\t'%d: : _values %q ( %s )", p.Position /*description */, "userdb", strings.Join(choices, " "))
+				fmt.Printf("' \\\n")
+				delete(poschoice, p.Position) // delete ourselves from the map
+				continue
+			}
+			// if we are here wih a valid p.PosChoice, we were deleted from the map above, skip
+			if p.PosChoice != "" {
+				continue
+			}
+
 			fmt.Printf("\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
 			fmt.Printf("' \\\n")
 		}
