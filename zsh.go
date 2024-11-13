@@ -57,9 +57,12 @@ func (p Patterns) Zsh() Zsh {
 			fmt.Printf("\t\t'%s%s", p.Completion, p.Help)
 			args := z.Patterns.OptionHasArg(command, p.Completion)
 			if args != nil {
-				// the : : instead of :: is significant, between working _values, and not.
-				// It holds the description of what is being completed.
-				fmt.Printf(": : _values %q %s" /*description*/, "userdb", strings.Join(args, " "))
+				// The : : instead of :: is significant, between working _values, and not. It holds the description of what is being completed.
+				if len(args) == 1 && p.Type == Action {
+					fmt.Printf(": : %s", strings.Join(args, " "))
+				} else {
+					fmt.Printf(": : _values %q %s" /*description*/, "userdb", strings.Join(args, " "))
+				}
 				// remove from patterns, as we have handled it
 				delete(z.Patterns, command+"*"+p.Completion)
 			}
@@ -97,6 +100,13 @@ func (p Patterns) Zsh() Zsh {
 				continue
 			}
 
+			if p.Type == Action {
+				p.Completion = actionToZsh(p.Completion)
+				fmt.Printf("\t\t'%d: : %s", p.Position, p.Completion)
+				fmt.Printf("' \\\n")
+				continue
+			}
+
 			fmt.Printf("\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
 			fmt.Printf("' \\\n")
 		}
@@ -112,4 +122,20 @@ func (p Patterns) Zsh() Zsh {
 // funcName returns a string the valid function name in Zsh.
 func funcName(cmd string) string {
 	return strings.Replace(cmd, " ", "_", -1)
+}
+
+// actionToZsh
+func actionToZsh(a string) string {
+	switch a {
+	case "file", "directory":
+		return "_files"
+	case "group":
+		return "_groups"
+	case "user":
+		return "_users"
+	case "export":
+		return "_parameters"
+	}
+
+	return ""
 }
