@@ -45,9 +45,10 @@ func (p Patterns) Zsh() Zsh {
 		}
 		fmt.Printf("function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", command)
 
-		// Options first
+		// Options
+		// --fs-type[]: : _values "userdb" zfs lvm dir' \
 		for _, p := range patterns {
-			if p.Type == Command {
+			if p.Position > 0 {
 				continue
 			}
 			if p.Help == "" {
@@ -59,11 +60,25 @@ func (p Patterns) Zsh() Zsh {
 				// the : : instead of :: is significant, between working _values, and not.
 				// It holds the description of what is being completed.
 				fmt.Printf(": : _values %q %s" /*description*/, "userdb", strings.Join(args, " "))
-				// remove from pattersn
+				// remove from patterns, as we have handled it
 				delete(z.Patterns, command+"*"+p.Completion)
 			}
 			fmt.Printf("' \\\n")
 		}
+
+		// gather positional arguments with the same number, as they most be processs
+		// on the same line in the _arguments ... TODO
+
+		// Positional arguments
+		//  "1: :(quietly loudly)" \
+		for _, p := range patterns {
+			if p.Position == 0 {
+				continue
+			}
+			fmt.Printf("\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
+			fmt.Printf("' \\\n")
+		}
+
 		fmt.Printf("\t\t\"*::arg:->args\"\n")
 		fmt.Printf("}\n")
 	}
