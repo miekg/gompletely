@@ -44,7 +44,7 @@ func (p Patterns) Bash() Bash {
 		if pat.Type == Option || pat.Type == String { // only do command and actions
 			continue
 		}
-		c := Case{CaseString: quote(strconv.FormatInt(int64(i), 10))}
+		c := Case{CaseString: quote(strconv.FormatInt(int64(pat.Position), 10))}
 		switch pat.Type {
 		case Command:
 			c.Completion = fmt.Sprintf(`-W "$(_%s_completions_filter "%s")"`, b.Command, pat.Completion)
