@@ -1,0 +1,12 @@
+AddContainer:
+- --group
+- --man[Show context-sensitive manual page.]
+- --help[Show context-sensitive help.]
+- 1,servicename,
+- 2,$(c user list --comp)
+- 3,$(c server list --comp)
+- 4,repository,
+- 5,registry,
+
+AddContainer*--group:
+- $(c group list --comp)[Set **GROUP** as owner. The **runas** user should be a member of this group.]
