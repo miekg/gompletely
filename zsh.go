@@ -54,9 +54,12 @@ func (p Patterns) Zsh() (Zsh, []byte) {
 			if p.Help == "" {
 				p.Help = "[]"
 			}
-			fmt.Fprintf(b, "\t\t'%s%s", p.Completion, p.Help)
-			args := z.Patterns.OptionHasArg(command, p.Completion)
-			if args != nil {
+
+			args, help := z.Patterns.OptionHasArg(command, p.Completion)
+			if args == nil {
+				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, p.Help)
+			} else {
+				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, help)
 				// The : : instead of :: is significant, between working _values, and not. It holds the description of what is being completed.
 				if len(args) == 1 && p.Type == Action {
 					fmt.Fprintf(b, ": : %s", strings.Join(args, " "))

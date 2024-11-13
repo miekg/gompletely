@@ -12,23 +12,25 @@ import (
 // Patterns is a whole file of completions for a command.
 type Patterns map[string][]Pattern
 
-// OptionHasArg search the keys in p with <cmd>*option, and returns the completions
-func (p Patterns) OptionHasArg(cmd, option string) []string {
+// OptionHasArg search the keys in p with <cmd>*option, and returns the completions and the help.
+func (p Patterns) OptionHasArg(cmd, option string) ([]string, string) {
 	patterns, ok := p[cmd+"*"+option]
 	if !ok {
-		return nil
+		return nil, ""
 	}
 	// ok this is an option, return a string valid for _values, concattenate them with spaces
 	// and quota them
 	cs := make([]string, len(patterns))
+	help := ""
 	for i := range patterns {
+		help = patterns[i].Help
 		if patterns[i].Type == Action {
 			cs[i] = actionToZsh(patterns[i].Completion)
 			continue
 		}
 		cs[i] = patterns[i].Completion
 	}
-	return cs
+	return cs, help
 }
 
 // A type has four (useful) values:
