@@ -95,7 +95,13 @@ func (p Patterns) Bash() Bash {
 		options := []string{}
 		actions := []string{}
 		strs := []string{}
+		subcommands := []string{}
 		for _, pat := range p[k] {
+			if pat.Subcommand {
+				subcommands = append(subcommands, pat.Message)
+				continue
+			}
+
 			switch pat.Type {
 			case Command:
 				commands = append(commands, pat.Completion)
@@ -108,7 +114,7 @@ func (p Patterns) Bash() Bash {
 			}
 		}
 
-		completions_filter := strings.TrimSpace(join(options) + join(commands) + join(strs))
+		completions_filter := strings.TrimSpace(join(options) + join(commands) + join(strs) + join(subcommands))
 		switch completions_filter {
 		case "":
 			if len(actions) > 0 {
