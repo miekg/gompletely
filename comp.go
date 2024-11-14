@@ -125,7 +125,7 @@ func stripSubcommand(str string) (bool, string, string) {
 		return false, "", str
 	}
 	str = str[comma+1:]
-	return false, subcommand, str
+	return true, subcommand, str
 }
 
 // stripPos removes and saves a NUM,STRING, from the line.

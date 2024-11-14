@@ -51,6 +51,9 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			if p.Position > 0 {
 				continue
 			}
+			if p.Subcommand {
+				continue
+			}
 			if p.Help == "" {
 				p.Help = "[]"
 			}
@@ -86,12 +89,43 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			poschoice[p.Position] = p.Message
 		}
 
+		// check for subcommands
+		subcommands := []string{}
+		caseSub := ""
+		for _, p := range patterns {
+			if !p.Subcommand {
+				continue
+			}
+			subcommands = append(subcommands, p.Message)
+		}
+		// create the stanza we need to add after the _arguments calling
+		if len(subcommands) > 1 {
+			caseSub = "\n\t\tcase $line[1] in\n"
+			for _, s := range subcommands {
+				cmd := "_" + strings.Replace(command, " ", "_", -1) + "_" + s
+				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s\n\t\t\t;;\n", s, cmd)
+			}
+			caseSub += "\t\tesac\n"
+		}
+
 		// Positional arguments,
 		//  "1: :(quietly loudly)" \
 		for _, p := range patterns {
+			if p.Subcommand && len(subcommands) > 0 {
+				// subcommands default to position 1, handle them all
+				fmt.Fprintf(b, "\t\t'1: :( %s )", strings.Join(subcommands, " "))
+				fmt.Fprintf(b, "' \\\n")
+				subcommands = []string{}
+				continue
+			}
+
 			if p.Position == 0 {
 				continue
 			}
+			if p.Subcommand {
+				continue
+			}
+
 			if choice, ok := poschoice[p.Position]; ok {
 				// if the completion is empty, this is mean as a hint to the user what to complete
 				if p.Completion == "" {
@@ -105,6 +139,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 				delete(poschoice, p.Position) // delete ourselves from the map
 				continue
 			}
+
 			// if we are here wih a valid p.Message, we were deleted from the map above, skip
 			if p.Message != "" {
 				continue
@@ -122,7 +157,10 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 
 		fmt.Fprintf(b, "\t\t\"*::arg:->args\"\n")
 
-		// TODO: subcommands, and correctly generate those functions.
+		if caseSub != "" {
+			fmt.Fprintf(b, caseSub)
+		}
+
 		fmt.Fprintf(b, "}\n")
 	}
 	return z, b
