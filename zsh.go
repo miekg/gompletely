@@ -57,11 +57,14 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			if p.Help == "" {
 				p.Help = "[]"
 			}
+			// esacape '
 
 			args, help := z.Patterns.OptionHasArg(command, p.Completion)
 			if args == nil {
+				p.Help = strings.Replace(p.Help, "'", " ", -1)
 				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, p.Help)
 			} else {
+				help = strings.Replace(help, "'", " ", -1)
 				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, help)
 				// The : : instead of :: is significant, between working _values, and not. It holds the description of what is being completed.
 				if len(args) == 1 && p.Type == Action {
@@ -103,7 +106,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			caseSub = "\n\t\tcase $line[1] in\n"
 			for _, s := range subcommands {
 				cmd := "_" + strings.Replace(command, " ", "_", -1) + "_" + s
-				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s\n\t\t\t;;\n", s, funcName(cmd))
+				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s;;\n", s, funcName(cmd))
 			}
 			caseSub += "\t\tesac\n"
 		}
