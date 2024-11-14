@@ -60,10 +60,14 @@ const (
 // Pattern is a completion we read from the yaml. It is altered and made suitable for completion generation by Bash/Zsh/... etc.
 type Pattern struct {
 	Type       CompletionType
-	Completion string // the literal completion string
-	Position   int    // if > 0 this is a positional argument
-	PosChoice  string // if Poistion > 0 , but there are several options, we use PosChose string to differentiate
-	Help       string // optional help text
+	Completion string // The literal completion string.
+
+	// Pattern's type, subcommand, positional, should also be something like CompletionType, but the PatternType or some such.
+
+	Subcommand bool   // True is subcommand, Message contains command.
+	Position   int    // If > 0 this is a positional argument.
+	Message    string // The potential message after ,MESSAGE,
+	Help       string // Optional help text in brackets.
 }
 
 func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
@@ -76,10 +80,16 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 	// --root[bla] --> [bla] --root
 	help, str := stripHelp(str)
 	// 1,$(c volume-server list --comp) -> 1 $(c volume-server list --comp)
-	pos, choice, str := stripPos(str)
+	pos, message, str := stripPos(str)
+	// S,subcommand
+	subcommand, message1, str := stripSubcommand(str)
+	if message1 != "" {
+		message = message1
+	}
 
 	p.Position = pos
-	p.PosChoice = choice
+	p.Message = message
+	p.Subcommand = subcommand
 	p.Completion = str
 	p.Help = help
 	switch {
@@ -94,6 +104,31 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 		p.Type = String
 	}
 	return nil
+}
+
+// stripSucommand removes and saves a S,STRING, from the line.
+func stripSubcommand(str string) (bool, string, string) {
+	// if the first string up to a comma, is and S this is a subcommmand
+	comma := strings.Index(str, ",")
+	if comma < 0 {
+		return false, "", str
+	}
+	if str[:comma] != "S" {
+		return false, "", str
+	}
+	str = str[comma+1:]
+	// do we have a 2nd comma?
+	comma = strings.Index(str, ",")
+	if comma < 0 {
+		return false, "", str
+	}
+	// this must be a single string without spaces
+	subcommand := str[:comma]
+	if strings.Contains(subcommand, " ") {
+		return false, "", str
+	}
+	str = str[comma+1:]
+	return true, subcommand, str
 }
 
 // stripPos removes and saves a NUM,STRING, from the line.
@@ -115,12 +150,12 @@ func stripPos(str string) (int, string, string) {
 		return i, "", str
 	}
 	// this must be a single string without spaces
-	choice := str[:comma]
-	if strings.Contains(choice, " ") {
+	message := str[:comma]
+	if strings.Contains(message, " ") {
 		return i, "", str
 	}
 	str = str[comma+1:]
-	return i, choice, str
+	return i, message, str
 }
 
 // stripHelp check str for a [...] block at the end. If found that block is returned and removed from str, that new

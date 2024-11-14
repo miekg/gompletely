@@ -1,18 +1,61 @@
 c:
-- 1,user,user
-- 1,u,u
-- --debug
-- --json
-- --man
+- S,user,
+- S,group,
 
 c user:
-- 1,list,list
+- S,list,
+- S,add,
 
 c user list:
-- 1,user,$(c user list --comp)
+- --no-header[Do not output a header when listing when listing all users.]
+- --full[Display full output of the user.]
+- --terse[Output the user in a terse format.]
+- --removed[Display a removed user account. This requires access to /var/log/removed-users or present the JSON on standard input.]
+- --contact[When listing all users show only those that are a contact for another user.]
+- --man[Show context-sensitive manual page.]
+- --help[Show context-sensitive help.]
+- 1,$(c user list --comp)
 
-c u:
-- 1,list,list
+c user add:
+- --root[Specifies that the user account does not have a contact person. This option is set automatically if a password hash is supplied.]
+- --reuse-uid[Determine what should be done if the given loginname existed in the past.]
+- --no-reuse-uid[Determine what should be done if the given loginname existed in the past.]
+- --home-volume[Create (default) a home volume for the new user.]
+- --no-home-volume[Create (default) a home volume for the new user.]
+- --mailcontact[Send an email (default) to the contact person that the account has been created.]
+- --no-mailcontact[Send an email (default) to the contact person that the account has been created.]
+- --maildhzpasswordto[Run SetPasswd --maildhzpasswordto directly after creating the login.]
+- --man[Show context-sensitive manual page.]
+- --help[Show context-sensitive help.]
+- 1,loginname,
+- 2,$(c protogrp list --comp)
+- 3,name,
+- 4,email,
+- 5,$(c user list --comp --contact)
+- 6,$(for m in 6 12 24 36 48; do ((m = m + 1)); echo $(date -d "$(date +%Y-%m-1) $m month" +%Y-%m-%d); done)
+- 7,$(echo E U S Z)
+- 8,$(c shell list --comp)
 
-c u list:
-- 1,user,$(c user list --comp)
+c group:
+- S,list,
+- S,add,
+
+c group list:
+- --no-header[Do not output a header when listing all groups.]
+- --full[Display full output of the group.]
+- --terse[Output the group in a terse format.]
+- --recurse[Recursively list sub groups.]
+- --seperator[When recursively listing groups use this character as seperator.]
+- --list[List members (including sub groups, prefixed with @) of the group line by line. With **--recursve** the sub groups are expanded too.]
+- --list-kosten-plaats[When listing filter the groups and only show the datasteward groups. See ListReport(1).]
+- --kosten-plaats[Interpretate *group* as a kostenplaatsnummer and show the datasteward group. See ListReport(1).]
+- --man[Show context-sensitive manual page.]
+- --help[Show context-sensitive help.]
+- 1,$(c group list --comp)
+
+c group add:
+- --gid[Set **GID** for the group.]
+- --auto[Used when running in a scheduled jobs or pipelines. Only here for backwards compatibility.]
+- --man[Show context-sensitive manual page.]
+- --help[Show context-sensitive help.]
+- 1,Group,
