@@ -81,8 +81,11 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 	help, str := stripHelp(str)
 	// 1,$(c volume-server list --comp) -> 1 $(c volume-server list --comp)
 	pos, message, str := stripPos(str)
-	// s,subcommand
-	subcommand, message, str := stripSubcommand(str)
+	// S,subcommand
+	subcommand, message1, str := stripSubcommand(str)
+	if message1 != "" {
+		message = message1
+	}
 
 	p.Position = pos
 	p.Message = message
