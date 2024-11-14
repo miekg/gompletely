@@ -37,8 +37,8 @@ c user add:
 - 8,$(c shell list --comp)
 
 c group:
-- S,list
-- S,add
+- S,list,
+- S,add,
 
 c group list:
 - --no-header[Do not output a header when listing all groups.]
