@@ -62,7 +62,7 @@ type Pattern struct {
 	Type       CompletionType
 	Completion string // the literal completion string
 	Position   int    // if > 0 this is a positional argument
-	PosChoice  string // if Poistion > 0 , but there are several options, we use PosChose string to differentiate
+	Message    string // if Poistion > 0 , but there are several options, we use PosChose string to differentiate
 	Help       string // optional help text
 }
 
@@ -79,7 +79,7 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 	pos, choice, str := stripPos(str)
 
 	p.Position = pos
-	p.PosChoice = choice
+	p.Message = choice
 	p.Completion = str
 	p.Help = help
 	switch {
