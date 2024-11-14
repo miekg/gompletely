@@ -103,7 +103,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			caseSub = "\n\t\tcase $line[1] in\n"
 			for _, s := range subcommands {
 				cmd := "_" + strings.Replace(command, " ", "_", -1) + "_" + s
-				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s\n\t\t\t;;\n", s, cmd)
+				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s\n\t\t\t;;\n", s, funcName(cmd))
 			}
 			caseSub += "\t\tesac\n"
 		}
@@ -168,7 +168,9 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 
 // funcName returns a string the valid function name in Zsh.
 func funcName(cmd string) string {
-	return strings.Replace(cmd, " ", "_", -1)
+	s1 := strings.Replace(cmd, " ", "_", -1)
+	s1 = strings.Replace(s1, "-", "_", -1)
+	return s1
 }
 
 // actionToZsh
