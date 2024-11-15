@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	stripmd "github.com/writeas/go-strip-markdown/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -92,6 +93,13 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 	p.Subcommand = subcommand
 	p.Completion = str
 	p.Help = help
+
+	p.Help = stripmd.Strip(p.Help)
+	p.Help = strings.Replace(p.Help, "'", "｀", -1) // replace ` with (U+FF40), completion trips on embedded `
+	if p.Help == "" {
+		p.Help = "[]"
+	}
+
 	switch {
 	case strings.HasPrefix(str, "<"):
 		p.Type = Action

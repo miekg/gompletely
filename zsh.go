@@ -73,12 +73,10 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 
 			args, help := z.Patterns.OptionHasArg(command, p.Completion)
 			if args == nil {
-				p.Help = strings.Replace(p.Help, "'", " ", -1)
 				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, p.Help)
 			} else {
-				help = strings.Replace(help, "'", " ", -1)
 				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, help)
-				// The : : instead of :: is significant, between working _values, and not. It holds the description of what is being completed.
+				// The : : instead of :: is significant (I think), between working _values, and not. It holds the description of what is being completed.
 				if len(args) == 1 && p.Type == Action {
 					fmt.Fprintf(b, ": : %s", strings.Join(args, " "))
 				} else {

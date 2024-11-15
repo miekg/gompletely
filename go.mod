@@ -6,3 +6,5 @@ require (
 	go.science.ru.nl v0.0.66
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require github.com/writeas/go-strip-markdown/v2 v2.1.1

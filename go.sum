@@ -1,3 +1,5 @@
+github.com/writeas/go-strip-markdown/v2 v2.1.1 h1:hAxUM21Uhznf/FnbVGiJciqzska6iLei22Ijc3q2e28=
+github.com/writeas/go-strip-markdown/v2 v2.1.1/go.mod h1:UvvgPJgn1vvN8nWuE5e7v/+qmDu3BSVnKAB6Gl7hFzA=
 go.science.ru.nl v0.0.66 h1:qVV174LXJhp8js0D6rqYse7WhEBbQ087CZR35lae80Y=
 go.science.ru.nl v0.0.66/go.mod h1:IURN/hfo7UAviudnjTgunIM9GAYLIRpyGyh8W+8NKFQ=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
