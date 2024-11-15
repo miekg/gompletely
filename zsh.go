@@ -53,9 +53,9 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 		}
 
 		if len(subcommands) > 0 {
-			fmt.Fprintf(b, "function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", funcName(command))
+			fmt.Fprintf(b, "function _%s {\n\tlocal line\n\n\t_arguments -C -S -s\\\n", funcName(command))
 		} else {
-			fmt.Fprintf(b, "function _%s {\n\t_arguments -C \\\n", funcName(command))
+			fmt.Fprintf(b, "function _%s {\n\t_arguments -C -S -s\\\n", funcName(command))
 		}
 
 		// Options
