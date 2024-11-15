@@ -61,14 +61,8 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 		// Options
 		// --fs-type[]: : _values "userdb" zfs lvm dir' \
 		for _, p := range patterns {
-			if p.Position > 0 {
+			if p.Position > 0 || p.Subcommand {
 				continue
-			}
-			if p.Subcommand {
-				continue
-			}
-			if p.Help == "" {
-				p.Help = "[]"
 			}
 
 			args, help := z.Patterns.OptionHasArg(command, p.Completion)
@@ -88,9 +82,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			fmt.Fprintf(b, "' \\\n")
 		}
 
-		// gather positional arguments with the same number, as they most be processs
-		// on the same line in the _arguments ... Put those in a map[num]string, there should
-		// only be a single one, per number: Check for this in Valid() TODO.
+		// Gather the messages for the positional args.
 		poschoice := map[int]string{}
 		for _, p := range patterns {
 			if p.Position == 0 {
@@ -123,11 +115,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 				subcommands = []string{}
 				continue
 			}
-
-			if p.Position == 0 {
-				continue
-			}
-			if p.Subcommand {
+			if p.Position == 0 || p.Subcommand {
 				continue
 			}
 
@@ -190,6 +178,5 @@ func actionToZsh(a string) string {
 	case "export":
 		return "_parameters"
 	}
-
 	return ""
 }
