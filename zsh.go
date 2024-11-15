@@ -43,7 +43,20 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 		if !ok {
 			continue
 		}
-		fmt.Fprintf(b, "function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", funcName(command))
+		// check for subcommands
+		subcommands := []string{}
+		for _, p := range patterns {
+			if !p.Subcommand {
+				continue
+			}
+			subcommands = append(subcommands, p.Message)
+		}
+
+		if len(subcommands) > 0 {
+			fmt.Fprintf(b, "function _%s {\n\tlocal line\n\n\t_arguments -C \\\n", funcName(command))
+		} else {
+			fmt.Fprintf(b, "function _%s {\n\t_arguments -C \\\n", funcName(command))
+		}
 
 		// Options
 		// --fs-type[]: : _values "userdb" zfs lvm dir' \
@@ -57,7 +70,6 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			if p.Help == "" {
 				p.Help = "[]"
 			}
-			// esacape '
 
 			args, help := z.Patterns.OptionHasArg(command, p.Completion)
 			if args == nil {
@@ -92,21 +104,13 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			poschoice[p.Position] = p.Message
 		}
 
-		// check for subcommands
-		subcommands := []string{}
-		caseSub := ""
-		for _, p := range patterns {
-			if !p.Subcommand {
-				continue
-			}
-			subcommands = append(subcommands, p.Message)
-		}
 		// create the stanza we need to add after the _arguments calling
+		caseSub := ""
 		if len(subcommands) > 1 {
 			caseSub = "\n\t\tcase $line[1] in\n"
 			for _, s := range subcommands {
 				cmd := "_" + strings.Replace(command, " ", "_", -1) + "_" + s
-				caseSub += fmt.Sprintf("\t\t\t%s)\n\t\t\t\t%s;;\n", s, funcName(cmd))
+				caseSub += fmt.Sprintf("\t\t\t%s)\t\t%s;;\n", s, funcName(cmd))
 			}
 			caseSub += "\t\tesac\n"
 		}
