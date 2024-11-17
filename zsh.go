@@ -123,7 +123,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 				// if the completion is empty, this is mean as a hint to the user what to complete
 				if p.Completion == "" {
 					// 2:service name:'
-					fmt.Fprintf(b, "\t\t'%d:%s:", p.Position, p.Message)
+					fmt.Fprintf(b, "\t\t'%d:%s:", p.Position, strings.ToLower(p.Message))
 					fmt.Fprintf(b, "' \\\n")
 				} else {
 					fmt.Fprintf(b, "\t\t'%d: : _values %q ( %s )", p.Position /*description */, "userdb", choice)
