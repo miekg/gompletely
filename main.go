@@ -20,7 +20,8 @@ var tmplfs embed.FS
 var (
 	bashtmpl = Tmpl("bash")
 
-	flagShell = flag.String("s", "bash", "generate the completions for this shell.")
+	flagShell   = flag.String("s", "bash", "generate the completions for this shell.")
+	flagMessage = flag.String("m", "", "optional message to use when completing subcommands.")
 )
 
 func main() {

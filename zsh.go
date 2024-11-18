@@ -74,7 +74,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 				if len(args) == 1 && p.Type == Action {
 					fmt.Fprintf(b, ": : %s", strings.Join(args, " "))
 				} else {
-					fmt.Fprintf(b, ": : _values %q %s" /*description*/, "userdb", strings.Join(args, " "))
+					fmt.Fprintf(b, ": : _values %q %s", *flagMessage, strings.Join(args, " "))
 				}
 				// remove from patterns, as we have handled it
 				delete(z.Patterns, command+"*"+p.Completion)
@@ -126,7 +126,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 					fmt.Fprintf(b, "\t\t'%d:%s:", p.Position, strings.ToLower(p.Message))
 					fmt.Fprintf(b, "' \\\n")
 				} else {
-					fmt.Fprintf(b, "\t\t'%d: : _values %q ( %s )", p.Position /*description */, "userdb", choice)
+					fmt.Fprintf(b, "\t\t'%d: : _values %q ( %s )", p.Position, *flagMessage, choice)
 					fmt.Fprintf(b, "' \\\n")
 				}
 				delete(poschoice, p.Position) // delete ourselves from the map
@@ -144,7 +144,7 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 				continue
 			}
 
-			fmt.Fprintf(b, "\t\t'%d: : _values %q %s", p.Position /*description */, "userdb", p.Completion)
+			fmt.Fprintf(b, "\t\t'%d: : _values %q %s", p.Position, *flagMessage, p.Completion)
 			fmt.Fprintf(b, "' \\\n")
 		}
 
