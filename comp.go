@@ -96,6 +96,7 @@ func (p *Pattern) UnmarshalYAML(node *yaml.Node) error {
 
 	p.Help = stripmd.Strip(p.Help)
 	p.Help = strings.Replace(p.Help, "'", "｀", -1) // replace ` with (U+FF40), completion trips on embedded `
+	// TODO: pipe, $ or escape?
 	if p.Help == "" {
 		p.Help = "[]"
 	}
