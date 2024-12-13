@@ -1,6 +1,6 @@
 module github.com/miekg/gompletely
 
-go 1.23.2
+go 1.21.0
 
 require (
 	go.science.ru.nl v0.0.66
