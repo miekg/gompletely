@@ -108,7 +108,7 @@ func (p Patterns) Bash() Bash {
 			case Option:
 				options = append(options, pat.Completion)
 			case Action:
-				actions = append(actions, "-A "+pat.Completion)
+				actions = append(actions, "-A "+pat.Completion+" ")
 			case String:
 				strs = append(strs, pat.Completion)
 			}
