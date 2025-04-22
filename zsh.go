@@ -71,10 +71,13 @@ func (p Patterns) Zsh() (Zsh, *bytes.Buffer) {
 			} else {
 				fmt.Fprintf(b, "\t\t'%s%s", p.Completion, help)
 				// The : : instead of :: is significant (I think), between working _values, and not. It holds the description of what is being completed.
+				// No: double :: signals optional arg:
+				// https://zsh.sourceforge.io/Doc/Release/Completion-System.html#Completion-Functions
+				// > If there are two colons before the message the argument is optional.
 				if len(args) == 1 && p.Type == Action {
-					fmt.Fprintf(b, ": : %s", strings.Join(args, " "))
+					fmt.Fprintf(b, ": %s", strings.Join(args, " "))
 				} else {
-					fmt.Fprintf(b, ": : _values %q %s", *flagMessage, strings.Join(args, " "))
+					fmt.Fprintf(b, ": _values %q %s", *flagMessage, strings.Join(args, " "))
 				}
 				// remove from patterns, as we have handled it
 				delete(z.Patterns, command+"*"+p.Completion)
