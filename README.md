@@ -1,5 +1,8 @@
 Re-implementation in Go of https://github.com/DannyBen/completely
 
+> Use https://github.com/miekg/king instead, that works directly on the Kong library, instead
+> of going via this indirect route.
+
 > Note: Hacked together (esp the Zsh completion), works for me, probably not for you.
 
 This generates Zsh and Bash completions from a YAML definition.
@@ -32,28 +35,29 @@ The Zsh part of this is under active development, I don't use bash.
 The help text is assumed to be in markdown, which is stripped to prevent weird character showing up
 in the shell completion scripts.
 
-~~~ yaml
+```yaml
 useradd:
 - '--root[help message]'
 - '1,$(c protogrp list --comp)'
 - '2,message,
 - '3,endate,$(for m in 6 12 24 36 48; do ((m = m + 1)); echo $(date -d "$(date +%Y-%m-1) $m month" +%Y-%m-%d); done)'
 - '4,shells,$(c shell list --comp)'
-~~~
+```
 
 ## Development
 
 ### Zsh
 
 Unload and load test completion:
-~~~ sh
+
+```sh
 unfunction _AddVolume; autoload -U _AddVolume
 ./gompletely -s zsh < testdata/AddVolume.yml > _AddVolume
 source _AddVolume
-~~~
+```
 
 ### TODO
 
-* Tests
-* Fix the coding mess that is zsh.go
-* Tests against previously generated *.bash and \_zsh completion files.
+- Tests
+- Fix the coding mess that is zsh.go
+- Tests against previously generated \*.bash and \_zsh completion files.
